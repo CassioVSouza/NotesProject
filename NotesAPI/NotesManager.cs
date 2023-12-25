@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 
 namespace NotesAPI
@@ -12,94 +8,116 @@ namespace NotesAPI
     {
         public void AddingNotes(List<NotesModel> models)
         {
-            NotesModel NoteModel = new NotesModel();
+            NotesModel noteModel = new NotesModel();
 
-            Console.WriteLine("Insert the Title of the Note: ");
-            NoteModel.Title = Console.ReadLine();
+            Console.Write("Insert the Title of the Note: ");
+            noteModel.Title = Console.ReadLine();
 
-            Console.WriteLine("Insert the Note: ");
-            NoteModel.Notes = Console.ReadLine();
+            Console.Write("Insert the Note: ");
+            noteModel.Notes = Console.ReadLine();
 
-            models.Add(NoteModel);
+            models.Add(noteModel);
 
             SaveInFile(models);
         }
 
         public void DeleteNotes(List<NotesModel> models)
         {
-            foreach (var model in models)
-            {
-                Console.WriteLine($"Note Number: {models.IndexOf(model) + 1}");
-                Console.WriteLine($"Title: {model.Title}\nNote: {model.Notes}\n");
-            }
-            Console.WriteLine("Insert the number of the note that you want to delete: ");
-            int Choice = Convert.ToInt32(Console.ReadLine());
-            
-            if(Choice >= 1 && Choice <= models.Count)
+            DisplayNotes(models);
+
+            Console.Write("Insert the number of the note that you want to delete: ");
+            if (int.TryParse(Console.ReadLine(), out int choice) && choice >= 1 && choice <= models.Count)
             {
                 Console.WriteLine("Note Deleted!");
-                models.Remove(models[Choice - 1]);
+                models.RemoveAt(choice - 1);
             }
             else
             {
-                Console.WriteLine("Insert a valid note number!");
+                Console.WriteLine("Invalid note number!");
             }
+
             SaveInFile(models);
         }
 
         public void EditNotes(List<NotesModel> models)
         {
-            NotesModel notesModel = new NotesModel();
-            foreach (var model in models)
+            DisplayNotes(models);
+
+            Console.Write("Insert the number of the note that you want to edit: ");
+            if (int.TryParse(Console.ReadLine(), out int choice) && choice >= 1 && choice <= models.Count)
             {
-                Console.WriteLine($"Note Number: {models.IndexOf(model) + 1}");
-                Console.WriteLine($"Title: {model.Title}\nNote: {model.Notes}\n");
-            }
-            Console.WriteLine("Insert the number of the note that you want to edit: ");
-            int Choice = Convert.ToInt32(Console.ReadLine());
+                NotesModel notesModel = new NotesModel();
 
-            Console.WriteLine("Insert the new title: ");
-            notesModel.Title = Console.ReadLine();
+                Console.Write("Insert the new title: ");
+                notesModel.Title = Console.ReadLine();
 
-            Console.WriteLine("Insert the new note: ");
-            notesModel.Notes = Console.ReadLine();
+                Console.Write("Insert the new note: ");
+                notesModel.Notes = Console.ReadLine();
 
-            if (Choice >= 1 && Choice <= models.Count)
-            {
                 Console.WriteLine("Note Edit!");
-                models[Choice - 1] = notesModel;
+                models[choice - 1] = notesModel;
             }
             else
             {
-                Console.WriteLine("Insert a valid note number!");
+                Console.WriteLine("Invalid note number!");
             }
+
             SaveInFile(models);
         }
 
         public void ShowNotes(List<NotesModel> models)
         {
             Console.WriteLine("=================================================");
+            DisplayNotes(models);
+            Console.WriteLine("=================================================");
+        }
+
+        private void DisplayNotes(List<NotesModel> models)
+        {
             foreach (var model in models)
             {
                 Console.WriteLine($"Title: {model.Title}\nNote: {model.Notes}\n");
             }
-            if (!models.Any())
+            if (models.Count == 0)
             {
-                Console.WriteLine("There isn't notes here!");
+                Console.WriteLine("There are no notes here!");
             }
-            Console.WriteLine("=================================================");
         }
 
         private void SaveInFile(List<NotesModel> models)
         {
-            string Path = "D:/LogNotes/File.txt";
-
-            StreamWriter File = new StreamWriter(Path);
-            foreach (var model in models)
+            try
             {
-                File.WriteLine($"Title: {model.Title}\nNote: {model.Notes}\n");
+                string filePath = GetFilePath();
+                using (StreamWriter file = new StreamWriter(filePath))
+                {
+                    foreach (var model in models)
+                    {
+                        file.WriteLine($"Title: {model.Title}\nNote: {model.Notes}\n");
+                    }
+                }
+
+                Console.WriteLine("Notes saved successfully!");
             }
-            File.Close();
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while saving the notes: {ex.Message}");
+            }
+        }
+
+        private string GetFilePath()
+        {
+            string directoryPath = "NotesFiles";
+            string fileName = "File.txt";
+            string filePath = Path.Combine(directoryPath, fileName);
+
+            // Create directory if it doesn't exist
+            if (!Directory.Exists(directoryPath))
+            {
+                Directory.CreateDirectory(directoryPath);
+            }
+
+            return filePath;
         }
     }
 }
