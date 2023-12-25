@@ -8,7 +8,7 @@ namespace NotesAPI
 {
     public class NotesModel
     {
-        public string Title { get; set; }
-        public string Notes {  get; set; }
+        public string? Title { get; set; }
+        public string? Notes {  get; set; }
     }
 }
