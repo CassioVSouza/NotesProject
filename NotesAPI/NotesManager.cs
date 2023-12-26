@@ -11,10 +11,12 @@ namespace NotesAPI
             NotesModel noteModel = new NotesModel();
 
             Console.Write("Insert the Title of the Note: ");
-            noteModel.Title = Console.ReadLine();
+            noteModel.Title = Console.ReadLine() ?? string.Empty;
 
             Console.Write("Insert the Note: ");
-            noteModel.Notes = Console.ReadLine();
+            noteModel.Notes = Console.ReadLine() ?? string.Empty;
+
+            noteModel.TimeOfCreation = DateTime.Now;
 
             models.Add(noteModel);
 
@@ -54,6 +56,8 @@ namespace NotesAPI
                 Console.Write("Insert the new note: ");
                 notesModel.Notes = Console.ReadLine();
 
+                notesModel.TimeOfCreation = DateTime.Now;
+
                 Console.WriteLine("Note Edit!");
                 models[choice - 1] = notesModel;
             }
@@ -72,11 +76,41 @@ namespace NotesAPI
             Console.WriteLine("=================================================");
         }
 
+        public void SearchNotes(List<NotesModel> models)
+        {
+            Console.Write("Search for: ");
+            string search = Console.ReadLine() ?? string.Empty;
+
+            List<NotesModel> NotesFounded = models.FindAll(models => 
+                (models.Title != null && models.Title.Contains(search)) || 
+                (models.Notes != null && models.Notes.Contains(search)));
+
+            try
+            {
+                if (NotesFounded.Count > 0)
+                {
+                    Console.WriteLine($"{NotesFounded.Count} Notes Founded!");
+                    foreach (var note in NotesFounded)
+                    {
+                        Console.Write($"{note.Title}\n{note.Notes}\n");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Notes not founded!");
+                }
+            }
+            catch(Exception ex) 
+            {
+                Console.WriteLine($"An error occurred while searching the notes: {ex.Message}"); 
+            }
+        }
+
         private void DisplayNotes(List<NotesModel> models)
         {
             foreach (var model in models)
             {
-                Console.WriteLine($"Title: {model.Title}\nNote: {model.Notes}\n");
+                Console.WriteLine($"Note {models.IndexOf(model) + 1}:\nTitle: {model.Title}\nNote: {model.Notes}\nCreated at: {model.TimeOfCreation}");
             }
             if (models.Count == 0)
             {
@@ -93,7 +127,7 @@ namespace NotesAPI
                 {
                     foreach (var model in models)
                     {
-                        file.WriteLine($"Title: {model.Title}\nNote: {model.Notes}\n");
+                        file.WriteLine($"Title: {model.Title}\nNote: {model.Notes}\nCreated at: {model.TimeOfCreation}");
                     }
                 }
 

@@ -13,7 +13,7 @@ namespace NotesProject
             {
                 do
                 {
-                    Console.WriteLine("Welcome to the Notes! Please select your option!\n1 - New Note\n2 - Delete Note\n3 - Edit Note\n4 - Show Notes\n5 - Exit");
+                    Console.WriteLine("Welcome to the Notes! Please select your option!\n1 - New Note\n2 - Delete Note\n3 - Edit Note\n4 - Show Notes\n5 - Search Notes\n6 - Exit");
                     Choice = Convert.ToInt32(Console.ReadLine());
                     switch (Choice)
                     {
@@ -32,7 +32,10 @@ namespace NotesProject
                         case 4:
                             notesManager.ShowNotes(Notes);
                             break;
-                       
+                        
+                        case 5: notesManager.SearchNotes(Notes);
+                            break;
+
                         case 6:
                             Console.WriteLine("Exited!");
                             break;
@@ -41,7 +44,7 @@ namespace NotesProject
                             Console.WriteLine("Enter a valid number!");
                             break;
                     }
-                }while (Choice != 5);
+                }while (Choice != 6);
             }
             catch (FormatException)
             {
